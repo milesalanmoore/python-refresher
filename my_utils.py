@@ -8,8 +8,14 @@ def get_column(file_name, query_column, query_value, result_column):
         return result
 
     headers = lines[0].strip().split(",")
-    query_col_idx = headers.index(query_column)
-    result_col_idx = headers.index(result_column)
+    query_col_idx = (
+        query_column if isinstance(query_column, int) else headers.index(query_column)
+    )
+    result_col_idx = (
+        result_column
+        if isinstance(result_column, int)
+        else headers.index(result_column)
+    )
 
     for line in lines[1:]:
         values = line.strip().split(",")
