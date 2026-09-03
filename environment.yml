@@ -1,0 +1,7 @@
+name: python-refresher
+channels:
+  - conda-forge
+dependencies:
+  - pycodestyle
+
+prefix: "/Users/milesmoore/miniforge3/envs/python-refresher"
