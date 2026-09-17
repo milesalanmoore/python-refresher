@@ -1,0 +1,6 @@
+name: swe4s
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pycodestyle
