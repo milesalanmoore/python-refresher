@@ -1,7 +1,6 @@
-name: python-refresher
+name: swe4s
 channels:
   - conda-forge
 dependencies:
+  - python
   - pycodestyle
-
-prefix: "/Users/milesmoore/miniforge3/envs/python-refresher"
