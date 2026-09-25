@@ -1,7 +1,11 @@
 """Utilities for pulling numeric columns out of a CSV file.
 
 * get_column - return the values of one column where another column matches
+* get_mean - return the arithmetic mean of a non-empty list of numbers
+* get_median - return the median of a non-empty list of numbers
+* get_std - return the population standard deviation of a list of numbers
 """
+import math
 
 
 def resolve_column(headers, column):
@@ -91,3 +95,92 @@ def get_column(file_name, query_column, query_value, result_column=1):
                              + ' to a number')
 
     return result
+
+
+def check_not_empty(values):
+    """Raise an error if a list of numbers is empty.
+
+    Parameters
+    ----------
+    values : list of int or float
+        Numbers to check.
+
+    Raises
+    ------
+    ValueError
+        If values is empty.
+    """
+    if len(values) == 0:
+        raise ValueError('Cannot summarize an empty list of values')
+
+
+def get_mean(values):
+    """Compute the arithmetic mean of a list of numbers.
+
+    Parameters
+    ----------
+    values : list of int or float
+        Non-empty list of numbers.
+
+    Returns
+    -------
+    float
+        Arithmetic mean of values.
+
+    Raises
+    ------
+    ValueError
+        If values is empty.
+    """
+    check_not_empty(values)
+    return sum(values) / len(values)
+
+
+def get_median(values):
+    """Compute the median of a list of numbers without modifying it.
+
+    Parameters
+    ----------
+    values : list of int or float
+        Non-empty list of numbers.
+
+    Returns
+    -------
+    float
+        Middle value of the sorted list, or the mean of the two middle
+        values when the list has an even length.
+
+    Raises
+    ------
+    ValueError
+        If values is empty.
+    """
+    check_not_empty(values)
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2 == 1:
+        return float(ordered[middle])
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def get_std(values):
+    """Compute the population standard deviation of a list of numbers.
+
+    Parameters
+    ----------
+    values : list of int or float
+        Non-empty list of numbers.
+
+    Returns
+    -------
+    float
+        Square root of the mean squared distance from the mean.
+
+    Raises
+    ------
+    ValueError
+        If values is empty.
+    """
+    mean = get_mean(values)
+    squared_diffs = [(value - mean) ** 2 for value in values]
+    return math.sqrt(sum(squared_diffs) / len(values))
