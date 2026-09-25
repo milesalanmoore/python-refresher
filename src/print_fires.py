@@ -2,11 +2,17 @@
 
 Reads a CSV of agrifood CO2 emissions and prints the values of the
 requested emission column for every row matching the requested country.
+If an operation is given, prints the mean, median, or standard deviation
+of those values instead.
 """
 import argparse
 import sys
 
 import my_utils
+
+OPERATIONS = {'mean': my_utils.get_mean,
+              'median': my_utils.get_median,
+              'std': my_utils.get_std}
 
 
 def parse_column(value):
@@ -34,7 +40,8 @@ def get_args():
     Returns
     -------
     argparse.Namespace
-        Parsed arguments: country, country_column, fires_column, file_name.
+        Parsed arguments: country, country_column, fires_column,
+        file_name, and operation (None if not given).
     """
     parser = argparse.ArgumentParser(
         description='Print fire-emission values for one country.',
@@ -55,6 +62,10 @@ def get_args():
                         type=str,
                         help='Path to the emissions CSV file',
                         required=True)
+    parser.add_argument('--operation',
+                        choices=sorted(OPERATIONS),
+                        help='Summarize the values instead of printing them',
+                        required=False)
     return parser.parse_args()
 
 
@@ -81,7 +92,10 @@ def main():
         print('No rows matched ' + args.country)
         sys.exit(1)
 
-    print(fires)
+    if args.operation is None:
+        print(fires)
+    else:
+        print(OPERATIONS[args.operation](fires))
 
 
 if __name__ == '__main__':
