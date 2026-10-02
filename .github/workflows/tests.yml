@@ -18,14 +18,15 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up the swe4s environment
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           environment-file: environment.yml
           activate-environment: swe4s
+          conda-remove-defaults: "true"
 
       - name: Style checks
         run: pycodestyle src/*.py test/unit/*.py
