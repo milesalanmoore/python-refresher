@@ -1,5 +1,7 @@
 # Python Refresher
 
+[![Tests](https://github.com/milesalanmoore/python-refresher/actions/workflows/tests.yml/badge.svg)](https://github.com/milesalanmoore/python-refresher/actions/workflows/tests.yml)
+
 Command-line tools for pulling emission values out of the Agrifood CO2
 emission dataset. `print_fires.py` reports the values of one emission
 column, such as savanna fires or forest fires, for a single country
@@ -7,6 +9,20 @@ across every year in the dataset, or optionally their mean, median, or
 standard deviation. The heavy lifting is done by `get_column()` in
 `src/my_utils.py`, a small reusable utility that returns the numeric values
 of one CSV column for the rows where another column matches a given value.
+
+## Changes in 4.0
+
+- Continuous integration with GitHub Actions
+  (`.github/workflows/tests.yml`). Every push to any branch, and every
+  pull request into `master`, builds the `swe4s` environment from
+  `environment.yml` and runs the style checks, unit tests, and functional
+  tests. The run fails if any of them fail.
+- New unit tests for header-only files, short rows, unreadable files, and
+  `check_not_empty()`.
+- New functional tests for argument order, `--help`, empty files, and
+  unreadable files.
+- `wget` added to `environment.yml`, since the functional tests use it to
+  download ssshtest.
 
 ## Changes in 3.0
 
@@ -28,12 +44,14 @@ test/func/           functional tests for print_fires.py (ssshtest)
 test/data/           small data file used by the functional tests
 data/                full dataset (not committed)
 run.sh               example runs of print_fires.py
+.github/workflows/   GitHub Actions workflow that runs the tests
 ```
 
 ## Installation
 
-The project depends only on Python and `pycodestyle`. Create the
-environment from `environment.yml` and activate it:
+The project depends only on Python, `pycodestyle`, and `wget` (used by
+the functional tests). Create the environment from `environment.yml` and
+activate it:
 
 ```bash
 mamba env create -f environment.yml
@@ -204,3 +222,10 @@ The functional tests use `test/data/emissions_subset.csv`, a subset of the
 full dataset: five years of Afghanistan (an odd number of values), four
 years of Ghana (an even number of values, and negative `Forestland`
 values), and two years of Holy See (blank emission values).
+
+### Continuous integration
+
+The same three checks (style, unit tests, functional tests) run
+automatically on GitHub Actions for every push to any branch and every
+pull request into `master`. Results are on the repository's Actions tab,
+and the badge at the top of this file shows the status of the latest run.
