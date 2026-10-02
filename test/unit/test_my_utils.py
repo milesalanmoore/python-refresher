@@ -221,6 +221,45 @@ class TestGetColumn(unittest.TestCase):
             my_utils.get_column(self.file_name, 'Area', 'A',
                                 result_column='Area')
 
+    def test_header_only_file(self):
+        header_only = write_csv([['Area', 'Value']])
+        try:
+            self.assertEqual(my_utils.get_column(header_only, 'Area', 'A',
+                                                 result_column='Value'),
+                             [])
+        finally:
+            os.remove(header_only)
+
+    def test_short_rows_skipped(self):
+        short_rows = write_csv([['Area', 'Value'], ['A', '1.5'], ['A'],
+                                [''], ['A', '2.5']])
+        try:
+            self.assertEqual(my_utils.get_column(short_rows, 'Area', 'A',
+                                                 result_column='Value'),
+                             [1.5, 2.5])
+        finally:
+            os.remove(short_rows)
+
+    @unittest.skipIf(hasattr(os, 'geteuid') and os.geteuid() == 0,
+                     'root can read files without read permission')
+    def test_unreadable_file(self):
+        os.chmod(self.file_name, 0)
+        try:
+            with self.assertRaises(PermissionError):
+                my_utils.get_column(self.file_name, 'Area', 'A')
+        finally:
+            os.chmod(self.file_name, 0o600)
+
+
+class TestCheckNotEmpty(unittest.TestCase):
+
+    def test_random_non_empty_list(self):
+        self.assertIsNone(my_utils.check_not_empty(random_int_list()))
+
+    def test_empty_list(self):
+        with self.assertRaises(ValueError):
+            my_utils.check_not_empty([])
+
 
 if __name__ == '__main__':
     unittest.main()

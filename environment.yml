@@ -2,5 +2,6 @@ name: swe4s
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python=3.14
   - pycodestyle
+  - wget

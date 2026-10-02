@@ -31,6 +31,19 @@ run test_values_by_index python $print_fires \
 assert_exit_code 0
 assert_in_stdout "[169.7846, 577.4328, 1499.1857, 837.7871]"
 
+run test_argument_order_does_not_matter python $print_fires \
+    --file_name $data \
+    --fires_column 3 \
+    --country Ghana \
+    --country_column 0
+assert_exit_code 0
+assert_in_stdout "[169.7846, 577.4328, 1499.1857, 837.7871]"
+
+run test_help python $print_fires --help
+assert_exit_code 0
+assert_in_stdout "usage: print_fires"
+assert_no_stderr
+
 run test_negative_values python $print_fires \
     --country Ghana \
     --country_column Area \
@@ -106,6 +119,33 @@ run test_missing_file python $print_fires \
 assert_exit_code 1
 assert_in_stdout "Could not find ../data/no_such_file.csv"
 assert_no_stderr
+
+empty_file=$(mktemp)
+run test_empty_file python $print_fires \
+    --country Ghana \
+    --country_column Area \
+    --fires_column "Savanna fires" \
+    --file_name "$empty_file"
+assert_exit_code 1
+assert_in_stdout "is empty"
+assert_no_stderr
+rm -f "$empty_file"
+
+# Root can read any file, so this test only makes sense as a normal user.
+if [ "$(id -u)" -ne 0 ]; then
+    unreadable_file=$(mktemp)
+    cp $data "$unreadable_file"
+    chmod 000 "$unreadable_file"
+    run test_unreadable_file python $print_fires \
+        --country Ghana \
+        --country_column Area \
+        --fires_column "Savanna fires" \
+        --file_name "$unreadable_file"
+    assert_exit_code 1
+    assert_in_stdout "Could not read $unreadable_file"
+    assert_no_stderr
+    rm -f "$unreadable_file"
+fi
 
 run test_unknown_column_name python $print_fires \
     --country Ghana \
